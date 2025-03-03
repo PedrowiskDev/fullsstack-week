@@ -1,6 +1,9 @@
+"use client";
+
 import { OrderStatus, Prisma } from "@prisma/client";
 import { ChevronLeftIcon, ScrollTextIcon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,13 +33,22 @@ const getOrderStatusLabel = (status: OrderStatus) => {
   if (status === "FINISHED") return "Finalizado";
   if (status === "IN_PREPARATION") return "Em Preparo";
   if (status === "PENDING") return "Pendente";
+  if (status === "PAYMENT_CONFIRMED") return "Pagamento Aprovado";
+  if (status === "PAYMENT_FAILED") return "Pagamento Falhou";
   return "";
 };
 
 const OrderList = ({ orders }: OrderListProps) => {
+  const router = useRouter();
+  const handleBackClick = () => router.back();
   return (
     <div className="space-y-6 p-6">
-      <Button size="icon" variant="secondary" className="rounded-full">
+      <Button
+        size="icon"
+        variant="secondary"
+        className="rounded-full"
+        onClick={handleBackClick}
+      >
         <ChevronLeftIcon />
       </Button>
       <div className="flex items-center gap-3">
@@ -47,7 +59,7 @@ const OrderList = ({ orders }: OrderListProps) => {
         <Card key={order.id}>
           <CardContent className="space-y-4 p-5">
             <div
-              className={`w-fit rounded-full bg-gray-500 px-2 py-1 text-white ${order.status === OrderStatus.FINISHED ? "bg-green-500" : "bg-gray-400"}`}
+              className={`w-fit rounded-full bg-gray-500 px-2 py-1 text-white ${([OrderStatus.PAYMENT_CONFIRMED, OrderStatus.FINISHED] as OrderStatus[]).includes(order.status) ? "bg-green-500" : "bg-gray-300"}`}
             >
               {getOrderStatusLabel(order.status)}
             </div>

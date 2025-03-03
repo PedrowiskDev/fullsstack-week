@@ -1,7 +1,6 @@
 "use server";
 
 import { ConsumptionMethod } from "@prisma/client";
-import { redirect } from "next/navigation";
 
 import { db } from "@/lib/prisma";
 
@@ -40,7 +39,7 @@ export const createOrder = async (input: CreateOrderInput) => {
     quantity: product.quantity,
     price: productsWithPrices.find((p) => p.id === product.id)!.price,
   }));
-  await db.order.create({
+  const order = await db.order.create({
     data: {
       status: "PENDING",
       customerName: input.customerName,
@@ -58,7 +57,8 @@ export const createOrder = async (input: CreateOrderInput) => {
       restaurantId: restaurant.id,
     },
   });
-  redirect(
-    `/${input.slug}/orders?cpf=${removeCpfPunctuation(input.customerCpf)}`,
-  );
+  // redirect(
+  // `/${input.slug}/orders?cpf=${removeCpfPunctuation(input.customerCpf)}`,
+  //);
+  return order;
 };
